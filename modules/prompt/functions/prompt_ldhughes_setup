@@ -1,0 +1,92 @@
+#
+#
+#
+
+function +vi-git2symb() {
+    hook_com[vcs]=%F{green}±%f
+}
+
+function +vi-hg2symb() {
+    hook_com[vcs]=%F{red}☿%f
+}
+
+function prompt_ldhughes_precmd {
+    vcs_info
+
+    if (( $+functions[python-info] )); then
+        python-info
+    fi
+
+    if (( $+functions[ruby-info] )); then
+        ruby-info
+    fi
+}
+
+function prompt_ldhughes_setup {
+    setopt LOCAL_OPTIONS
+    unsetopt XTRACE KSH_ARRAYS
+    prompt_opts=(cr percent subst)
+
+    # Load required functions.
+    autoload -Uz add-zsh-hook
+    autoload -Uz vcs_info
+
+    # Add hook for calling vcs_info before each command.
+    add-zsh-hook precmd prompt_ldhughes_precmd
+
+    # Set vcs_info parameters.
+    zstyle ':vcs_info:*' enable bzr git hg svn
+    # zstyle ':vcs_info:*' disable cdv cvs mtn p4 svk tla
+    # zstyle ':vcs_info:git:*' check-for-changes true
+    # zstyle ':vcs_info:*' get-revision true
+    zstyle ':vcs_info:*' formats '%s‹%F{yellow}%b›%f '
+    zstyle ':vcs_info:*' actionformats '%F{magenta}(%f%s%F{magenta})%F{yellow}-%F{magenta}[%F{green}%b%F{yellow}|%F{red}%a%F{magenta}]%f '
+    zstyle ':vcs_info:git+set-message:*' hooks git2symb
+    zstyle ':vcs_info:hg+set-message:*' hooks hg2symb
+
+
+    # Set python-info parameters
+    zstyle ':prezto:module:python:info:virtualenv' format '(%v)'
+
+  zstyle ':prezto:module:editor:info:completing' format '%B%F{red}...%f%b'
+  zstyle ':prezto:module:editor:info:keymap:primary' format '%B%F{red}>%F{yellow}>%F{green}>%f%b'
+  zstyle ':prezto:module:editor:info:keymap:primary:overwrite' format ' %F{red}♺%f'
+  zstyle ':prezto:module:editor:info:keymap:alternate' format '%B%F{green}<%F{yellow}<%F{red}<%f%b'
+
+    # Check the UID
+    if [[ $UID -ge 500 ]]; then # normal user
+        local PR_USER='%F{green}%n%f'
+        local PR_USER_OP='%F{green}%#%f'
+        local PR_PROMPT='>%f'
+    else
+        local PR_USER='%F{red}%n%f'
+        local PR_USER_OP='%F{red}%$%f'
+        local PR_PROMPT='%F{red}>%f'
+    fi
+
+
+    # Check if we are on SSH or not
+    if [[ -n "$SSH_CLIENT" || -n "$SSH2_CLIENT" ]]; then
+        local PR_HOST='%F{yellow}%m%f'
+    else
+        local PR_HOST='%F{green}%m%f'
+    fi
+
+    local user_host="${PR_USER}%F{cyan}@%f${PR_HOST}"
+    local current_dir='%B%F{blue}${PWD/#$HOME/~}%b%f'
+
+    # Define prompts.
+    PROMPT='┌${python_info[virtualenv]}'
+    PROMPT+="─${user_host}"
+    PROMPT+=" ${current_dir}"
+    PROMPT+=' ${vcs_info_msg_0_}
+└─%(2L.%L.)'
+    PROMPT+='${editor_info[keymap]} '
+    # PROMPT+="$PR_PROMPT "
+
+    # RPROMPT=''
+  SPROMPT='zsh: correct %F{red}%R%f to %F{green}%r%f [nyae]? '
+}
+
+prompt_ldhughes_setup "$@"
+
