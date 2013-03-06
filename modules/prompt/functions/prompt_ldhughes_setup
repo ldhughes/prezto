@@ -79,7 +79,7 @@ function prompt_ldhughes_setup {
     PROMPT='┌${python_info[virtualenv]}'
     PROMPT+="─${user_host}"
     PROMPT+=" ${current_dir}"
-    PROMPT+=' ${vcs_info_msg_0_}
+    PROMPT+=' ${vcs_info_msg_0_}${VCSH_REPO_NAME}
 └─%(2L.%L.)'
     PROMPT+='${editor_info[keymap]} '
     # PROMPT+="$PR_PROMPT "
