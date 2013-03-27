@@ -23,6 +23,10 @@ elif [[ -s "$HOME/.rbenv/bin/rbenv" ]]; then
 elif (( $+commands[rbenv] )); then
   eval "$(rbenv init - --no-rehash zsh)"
 
+# Load chruby into shell session.
+elif [[ -s /usr/local/share/chruby/chruby.sh ]]; then
+    source /usr/local/share/chruby/chruby.sh
+
 # Prepend local gems bin directories to PATH.
 else
   path=($HOME/.gem/ruby/*/bin(N) $path)
