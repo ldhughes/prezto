@@ -23,9 +23,12 @@ elif [[ -s "$HOME/.rbenv/bin/rbenv" ]]; then
 elif (( $+commands[rbenv] )); then
   eval "$(rbenv init - --no-rehash zsh)"
 
-# Load chruby into shell session.
-elif [[ -s /usr/local/share/chruby/chruby.sh ]]; then
-    source /usr/local/share/chruby/chruby.sh
+# Load package manager installed chruby into the shell session.
+elif (( $+commands[chruby-exec] )); then
+  source "${commands[chruby-exec]:h:h}/share/chruby/chruby.sh"
+  if zstyle -t ':prezto:module:ruby:chruby' auto-switch; then
+    source "${commands[chruby-exec]:h:h}/share/chruby/auto.sh"
+  fi
 
 # Prepend local gems bin directories to PATH.
 else
